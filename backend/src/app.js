@@ -48,7 +48,7 @@ app.get('/api/health', (req, res) => {
 //routes, ADDED here laterr
 
 // 404 not found handler, maybe add a nice looking static page here
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
