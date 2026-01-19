@@ -1,7 +1,8 @@
-const Property = require('../models/Property');
-const Favorite = require('../models/Favorite');
-const { AppError } = require('../utils/errorHandler');
-const { propertySchema } = require('../utils/validators');
+const Property = require("../models/Property");
+const Favorite = require("../models/Favorite");
+const { AppError } = require("../utils/errorHandler");
+const { propertySchema } = require("../utils/validators");
+const { deleteImage } = require("../middleware/upload");
 
 // @desc    Get all properties (with filters)
 // @route   GET /api/properties
@@ -11,24 +12,24 @@ const getProperties = async (req, res, next) => {
     const {
       page = 1,
       limit = 10,
-      status = 'published',
+      status = "published",
       minPrice,
       maxPrice,
       location,
       category,
       bedrooms,
-      bathrooms
+      bathrooms,
     } = req.query;
 
     // Build filter object
     const filter = { status };
-    
+
     // Only show published properties for non-owners
-    if (!req.user || req.user.role !== 'owner') {
-      filter.status = 'published';
-    } else if (req.user.role === 'owner') {
+    if (!req.user || req.user.role !== "owner") {
+      filter.status = "published";
+    } else if (req.user.role === "owner") {
       // Owners can see their own draft properties
-      if (status === 'draft') {
+      if (status === "draft") {
         filter.owner = req.user.id;
       }
     }
@@ -42,7 +43,7 @@ const getProperties = async (req, res, next) => {
 
     // Other filters
     if (location) {
-      filter['location.city'] = new RegExp(location, 'i');
+      filter["location.city"] = new RegExp(location, "i");
     }
     if (category) filter.category = category;
     if (bedrooms) filter.bedrooms = Number(bedrooms);
@@ -54,7 +55,7 @@ const getProperties = async (req, res, next) => {
 
     // Execute query with pagination
     const properties = await Property.find(filter)
-      .populate('owner', 'name email')
+      .populate("owner", "name email")
       .sort({ createdAt: -1 })
       .limit(Number(limit))
       .skip(startIndex);
@@ -64,14 +65,14 @@ const getProperties = async (req, res, next) => {
     if (req.user) {
       const favorites = await Favorite.find({
         user: req.user.id,
-        property: { $in: properties.map(p => p._id) }
+        property: { $in: properties.map((p) => p._id) },
       });
 
-      const favoriteIds = favorites.map(f => f.property.toString());
-      
-      propertiesWithFavorites = properties.map(property => ({
+      const favoriteIds = favorites.map((f) => f.property.toString());
+
+      propertiesWithFavorites = properties.map((property) => ({
         ...property.toObject(),
-        isFavorite: favoriteIds.includes(property._id.toString())
+        isFavorite: favoriteIds.includes(property._id.toString()),
       }));
     }
 
@@ -82,7 +83,7 @@ const getProperties = async (req, res, next) => {
       total,
       totalPages: Math.ceil(total / Number(limit)),
       currentPage: Number(page),
-      data: propertiesWithFavorites
+      data: propertiesWithFavorites,
     });
   } catch (error) {
     next(error);
@@ -94,17 +95,19 @@ const getProperties = async (req, res, next) => {
 // @access  Public (if published), Private (if draft for owner)
 const getProperty = async (req, res, next) => {
   try {
-    const property = await Property.findById(req.params.id)
-      .populate('owner', 'name email');
+    const property = await Property.findById(req.params.id).populate(
+      "owner",
+      "name email",
+    );
 
     if (!property) {
-      throw new AppError('Property not found', 404);
+      throw new AppError("Property not found", 404);
     }
 
     // Check access permissions
-    if (property.status !== 'published') {
+    if (property.status !== "published") {
       if (!req.user || req.user.id !== property.owner._id.toString()) {
-        throw new AppError('Not authorized to access this property', 403);
+        throw new AppError("Not authorized to access this property", 403);
       }
     }
 
@@ -113,19 +116,19 @@ const getProperty = async (req, res, next) => {
     if (req.user) {
       const favorite = await Favorite.findOne({
         user: req.user.id,
-        property: property._id
+        property: property._id,
       });
       isFavorite = !!favorite;
     }
 
     const propertyData = {
       ...property.toObject(),
-      isFavorite
+      isFavorite,
     };
 
     res.status(200).json({
       success: true,
-      data: propertyData
+      data: propertyData,
     });
   } catch (error) {
     next(error);
@@ -138,8 +141,8 @@ const getProperty = async (req, res, next) => {
 const createProperty = async (req, res, next) => {
   try {
     // Only owners can create properties
-    if (req.user.role !== 'owner') {
-      throw new AppError('Only property owners can create listings', 403);
+    if (req.user.role !== "owner") {
+      throw new AppError("Only property owners can create listings", 403);
     }
 
     // Validate request body
@@ -148,18 +151,37 @@ const createProperty = async (req, res, next) => {
       throw new AppError(error.details[0].message, 400);
     }
 
+    // Handle images from upload middleware
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        images.push({
+          url: file.path,
+          publicId: file.filename,
+          caption: file.originalname,
+        });
+      });
+    }
+
     // Create property
     const property = await Property.create({
       ...req.body,
-      owner: req.user.id
+      images,
+      owner: req.user.id,
     });
 
     res.status(201).json({
       success: true,
       data: property,
-      message: 'Property created successfully'
+      message: "Property created successfully",
     });
   } catch (error) {
+    // Clean up uploaded images if error occurs
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        deleteImage(file.filename);
+      });
+    }
     next(error);
   }
 };
@@ -172,30 +194,30 @@ const updateProperty = async (req, res, next) => {
     let property = await Property.findById(req.params.id);
 
     if (!property) {
-      throw new AppError('Property not found', 404);
+      throw new AppError("Property not found", 404);
     }
 
     // Check ownership
     if (property.owner.toString() !== req.user.id) {
-      throw new AppError('Not authorized to update this property', 403);
+      throw new AppError("Not authorized to update this property", 403);
     }
 
     // Cannot edit published properties
-    if (property.status === 'published') {
-      throw new AppError('Cannot edit published properties', 400);
+    if (property.status === "published") {
+      throw new AppError("Cannot edit published properties", 400);
     }
 
     // Update property
     property = await Property.findByIdAndUpdate(
       req.params.id,
       { ...req.body, updatedAt: Date.now() },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     res.status(200).json({
       success: true,
       data: property,
-      message: 'Property updated successfully'
+      message: "Property updated successfully",
     });
   } catch (error) {
     next(error);
@@ -210,15 +232,24 @@ const deleteProperty = async (req, res, next) => {
     const property = await Property.findById(req.params.id);
 
     if (!property) {
-      throw new AppError('Property not found', 404);
+      throw new AppError("Property not found", 404);
     }
 
     // Check permissions
     const isOwner = property.owner.toString() === req.user.id;
-    const isAdmin = req.user.role === 'admin';
-    
+    const isAdmin = req.user.role === "admin";
+
     if (!isOwner && !isAdmin) {
-      throw new AppError('Not authorized to delete this property', 403);
+      throw new AppError("Not authorized to delete this property", 403);
+    }
+
+    // Delete images from Cloudinary
+    if (property.images && property.images.length > 0) {
+      for (const image of property.images) {
+        if (image.publicId) {
+          await deleteImage(image.publicId);
+        }
+      }
     }
 
     // Soft delete
@@ -226,7 +257,7 @@ const deleteProperty = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Property deleted successfully'
+      message: "Property deleted successfully",
     });
   } catch (error) {
     next(error);
@@ -241,18 +272,27 @@ const publishProperty = async (req, res, next) => {
     const property = await Property.findById(req.params.id);
 
     if (!property) {
-      throw new AppError('Property not found', 404);
+      throw new AppError("Property not found", 404);
     }
 
     // Check ownership
     if (property.owner.toString() !== req.user.id) {
-      throw new AppError('Not authorized to publish this property', 403);
+      throw new AppError("Not authorized to publish this property", 403);
     }
 
     // Validate required fields for publishing
-    const requiredFields = ['title', 'description', 'location', 'price', 'images'];
+    const requiredFields = [
+      "title",
+      "description",
+      "location",
+      "price",
+      "images",
+    ];
     for (const field of requiredFields) {
-      if (!property[field] || (Array.isArray(property[field]) && property[field].length === 0)) {
+      if (
+        !property[field] ||
+        (Array.isArray(property[field]) && property[field].length === 0)
+      ) {
         throw new AppError(`Cannot publish: ${field} is required`, 400);
       }
     }
@@ -263,7 +303,7 @@ const publishProperty = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: property,
-      message: 'Property published successfully'
+      message: "Property published successfully",
     });
   } catch (error) {
     next(error);
@@ -275,24 +315,23 @@ const publishProperty = async (req, res, next) => {
 // @access  Private (owners only)
 const getMyProperties = async (req, res, next) => {
   try {
-    if (req.user.role !== 'owner') {
-      throw new AppError('Only property owners can view their listings', 403);
+    if (req.user.role !== "owner") {
+      throw new AppError("Only property owners can view their listings", 403);
     }
 
     const { status } = req.query;
     const filter = { owner: req.user.id };
-    
+
     if (status) {
       filter.status = status;
     }
 
-    const properties = await Property.find(filter)
-      .sort({ createdAt: -1 });
+    const properties = await Property.find(filter).sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
       count: properties.length,
-      data: properties
+      data: properties,
     });
   } catch (error) {
     next(error);
@@ -306,5 +345,5 @@ module.exports = {
   updateProperty,
   deleteProperty,
   publishProperty,
-  getMyProperties
+  getMyProperties,
 };
