@@ -9,7 +9,7 @@ const {
   publishProperty,
   getMyProperties,
 } = require("../controllers/propertyController");
-const { protect, authorize } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/Auth");
 
 // Public routes
 router.get("/", getProperties);
