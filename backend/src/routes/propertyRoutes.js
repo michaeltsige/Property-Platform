@@ -10,13 +10,20 @@ const {
   getMyProperties,
 } = require("../controllers/propertyController");
 const { protect, authorize } = require("../middleware/Auth");
+const { uploadPropertyImages } = require("../middleware/upload");
 
 // Public routes
 router.get("/", getProperties);
 router.get("/:id", getProperty);
 
 // Protected routes - Owners only, except deletion which can b done by Admins
-router.post("/", protect, authorize("owner"), createProperty);
+router.post(
+  "/",
+  protect,
+  authorize("owner"),
+  uploadPropertyImages,
+  createProperty,
+);
 router.put("/:id", protect, authorize("owner"), updateProperty);
 router.delete("/:id", protect, authorize("owner", "admin"), deleteProperty);
 router.put("/:id/publish", protect, authorize("owner"), publishProperty);
