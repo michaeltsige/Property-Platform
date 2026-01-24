@@ -8,7 +8,7 @@ import Register from "./components/auth/Register";
 import Home from "./pages/Home";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
-
+import PropertyForm from "./components/properties/PropertyForm";
 import UserDashboard from "./components/dashboard/UserDashboard";
 import OwnerDashboard from "./components/dashboard/OwnerDashboard";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
@@ -26,7 +26,7 @@ function App() {
           <Route path="/properties" element={<Properties />} />
           <Route path="/properties/:id" element={<PropertyDetail />} />
 
-          {/* Protected Routes */}
+          {/* Protected Routes - User */}
           <Route
             path="/user/dashboard"
             element={
@@ -35,6 +35,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Protected Routes - Owner */}
           <Route
             path="/owner/dashboard"
             element={
@@ -43,12 +45,48 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/properties/create"
+            element={
+              <ProtectedRoute roles={["owner"]}>
+                <PropertyForm mode="create" />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/properties/edit/:id"
+            element={
+              <ProtectedRoute roles={["owner"]}>
+                <PropertyForm mode="edit" />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Routes - Admin */}
           <Route
             path="/admin/dashboard"
             element={
               <ProtectedRoute roles={["admin"]}>
                 <AdminDashboard />
               </ProtectedRoute>
+            }
+          />
+
+          {/* 404 Route */}
+          <Route
+            path="*"
+            element={
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+                  <p className="text-gray-600 mb-6">Page not found</p>
+                  <a href="/" className="btn-primary">
+                    Go Home
+                  </a>
+                </div>
+              </div>
             }
           />
         </Routes>
