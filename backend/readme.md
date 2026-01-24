@@ -99,3 +99,14 @@ npm run dev
 - `PUT` `/api/admin/properties/:id/toggle` - Disable/enable property
 - `GET` `/api/admin/users` - Get all users
 - `GET` `/api/admin/properties` - Get all properties
+
+## API Documentation
+
+Download the [Postman Collection](./docs/Property-Platform-API.postman_collection.json) and import it into Postman.
+
+**Import Instructions:**
+
+1. Open Postman
+2. Click Import → Upload Files
+3. Select the JSON file
+4. Set `baseUrl` variable to: `http://localhost:5000` for local testing
