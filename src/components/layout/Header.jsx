@@ -109,4 +109,3 @@ const Header = () => {
 };
 
 export default Header;
-s;
