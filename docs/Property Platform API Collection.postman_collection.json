@@ -1,0 +1,477 @@
+{
+	"info": {
+		"_postman_id": "414d80da-e345-4c47-be97-a9e267b363b5",
+		"name": "Property Platform API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44019766"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"owner\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"avatar\": \"https://example.com/avatar.png\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "Get Properties",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Property",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"{{propertyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Property (With Images)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"  const json = pm.response.json();",
+									"  pm.collectionVariables.set('propertyId', json.data._id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "Key",
+									"value": "Value",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Modern Apartment",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Nice 2-bedroom apartment",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "150000",
+									"type": "text"
+								},
+								{
+									"key": "location[address]",
+									"value": "Bole Road 45",
+									"type": "text"
+								},
+								{
+									"key": "location[city]",
+									"value": "Addis Ababa",
+									"type": "text"
+								},
+								{
+									"key": "location[country]",
+									"value": "Ethiopia",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "apartment",
+									"type": "text"
+								},
+								{
+									"key": "bedrooms",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "bathrooms",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "area",
+									"value": "85",
+									"type": "text"
+								},
+								{
+									"key": "amenities",
+									"value": "parking",
+									"type": "text"
+								},
+								{
+									"key": "amenities",
+									"value": "balcony",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/properties",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Property",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/properties/{{propertyId}}/publish",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"{{propertyId}}",
+								"publish"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Favorites",
+			"item": [
+				{
+					"name": "Add Favorite",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/favorites/{{propertyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"favorites",
+								"{{propertyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Favorites",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/favorites",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"favorites"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Get Metrics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/metrics",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Property",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"action\": \"disable\" }"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/properties/{{propertyId}}/toggle",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"properties",
+								"{{propertyId}}",
+								"toggle"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"if (pm.response.code === 200 || pm.response.code === 201) {",
+					"  const json = pm.response.json();",
+					"  if (json?.data?.token) {",
+					"    pm.collectionVariables.set('token', json.data.token);",
+					"  }",
+					"}"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "propertyId",
+			"value": ""
+		}
+	]
+}
