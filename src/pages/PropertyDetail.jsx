@@ -1,0 +1,1 @@
+import React from 'react';\n\nexport default function PropertyDetail() {\n  return (\n    <div className="min-h-screen bg-gray-50 py-12">\n      <div className="container mx-auto px-4">\n        <h1 className="text-3xl font-bold mb-8">Property Detail Page - Coming Soon</h1>\n      </div>\n    </div>\n  );\n}
