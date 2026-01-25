@@ -1,10 +1,18 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Home, Building, User, LogOut, Star } from "lucide-react";
+import {
+  Home,
+  Building,
+  User,
+  LogOut,
+  Star,
+  Shield,
+  Briefcase,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
-  const { user, logout, isAdmin, isOwner } = useAuth();
+  const { user, logout, isAdmin, isOwner, isRegularUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -22,8 +30,9 @@ const Header = () => {
             <span className="text-xl font-bold text-gray-900">PropertyHub</span>
           </Link>
 
-          {/* Navigation */}
+          {/* Navigation - Role Specific */}
           <nav className="hidden md:flex items-center space-x-6">
+            {/* Home - Shows for everyone */}
             <Link
               to="/"
               className="flex items-center space-x-1 text-gray-600 hover:text-primary-600"
@@ -31,39 +40,48 @@ const Header = () => {
               <Home className="h-4 w-4" />
               <span>Home</span>
             </Link>
-            <Link
-              to="/properties"
-              className="text-gray-600 hover:text-primary-600"
-            >
-              Properties
-            </Link>
 
-            {user && (
-              <>
-                {isOwner && (
-                  <Link
-                    to="/owner/dashboard"
-                    className="text-gray-600 hover:text-primary-600"
-                  >
-                    My Listings
-                  </Link>
-                )}
-                {isAdmin && (
-                  <Link
-                    to="/admin/dashboard"
-                    className="text-gray-600 hover:text-primary-600"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <Link
-                  to="/user/dashboard"
-                  className="flex items-center space-x-1 text-gray-600 hover:text-primary-600"
-                >
-                  <Star className="h-4 w-4" />
-                  <span>Favorites</span>
-                </Link>
-              </>
+            {/* Properties - Only for users and admins (owners see properties in Home)
+            {(isRegularUser || isAdmin) && (
+              <Link
+                to="/properties"
+                className="text-gray-600 hover:text-primary-600"
+              >
+                Properties
+              </Link>
+            )} */}
+
+            {/* My Listings - Only for owners */}
+            {isOwner && (
+              <Link
+                to="/owner/dashboard"
+                className="flex items-center space-x-1 text-gray-600 hover:text-primary-600"
+              >
+                <Briefcase className="h-4 w-4" />
+                <span>My Listings</span>
+              </Link>
+            )}
+
+            {/* Admin - Only for admins */}
+            {isAdmin && (
+              <Link
+                to="/admin/dashboard"
+                className="flex items-center space-x-1 text-gray-600 hover:text-primary-600"
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admin</span>
+              </Link>
+            )}
+
+            {/* Favorites - Only for regular users */}
+            {isRegularUser && (
+              <Link
+                to="/user/dashboard"
+                className="flex items-center space-x-1 text-gray-600 hover:text-primary-600"
+              >
+                <Star className="h-4 w-4" />
+                <span>Favorites</span>
+              </Link>
             )}
           </nav>
 
