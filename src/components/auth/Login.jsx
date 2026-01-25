@@ -134,11 +134,11 @@ const Login = () => {
         <div className="text-center">
           <p className="text-sm text-gray-600">Demo accounts:</p>
           <p className="text-xs text-gray-500">
-            User: user@example.com / password123
+            User: user1@example.com / password123
             <br />
-            Owner: owner@example.com / owner123
+            Owner: owner1@example.com / owner123
             <br />
-            Admin: admin@example.com / admin123
+            Admin: administrator@example.com / password123
           </p>
         </div>
       </div>

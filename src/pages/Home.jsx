@@ -1,24 +1,8 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import LoadingSpinner from "../components/shared/LoadingSpinner";
+import React from "react";
+import Properties from "./Properties"; // Reuse the Properties component
 
 const Home = () => {
-  const navigate = useNavigate();
-  const { loading, isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (!loading) {
-      // Redirect to properties page (public listing), where no registered account is needed
-      navigate("/properties");
-    }
-  }, [loading, navigate]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  return null;
+  return <Properties />;
 };
 
 export default Home;

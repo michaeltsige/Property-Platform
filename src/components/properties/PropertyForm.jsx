@@ -588,10 +588,9 @@ const PropertyForm = ({ mode = "create" }) => {
                 <div className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                   <div>
-                    <p className="font-medium text-gray-900">No Spam</p>
+                    <p className="font-medium text-gray-900"></p>
                     <p className="text-sm text-gray-600">
-                      We never share your contact information without
-                      permission.
+                      Property & Housing Ltd.
                     </p>
                   </div>
                 </div>

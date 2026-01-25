@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/layout/ProtectedRoute";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Home from "./pages/Home";
+import HomePage from "./pages/Homepage";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import PropertyForm from "./components/properties/PropertyForm";

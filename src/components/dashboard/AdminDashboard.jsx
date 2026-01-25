@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Users,
-  Home,
+  Building, // Changed from Home to Building for Properties
   BarChart3,
   Shield,
   TrendingUp,
@@ -10,10 +10,8 @@ import {
   CheckCircle,
   XCircle,
   Eye,
-  Filter,
-  Download,
   RefreshCw,
-} from "lucide-react";
+} from "lucide-react"; // Removed Filter and Download imports
 import { adminService, propertyService } from "../../services/propertyService";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import ErrorMessage from "../shared/ErrorMessage";
@@ -29,11 +27,13 @@ const AdminDashboard = () => {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  // Fetch all properties for admin (includes all statuses)
   const { data: propertiesData, isLoading: propertiesLoading } = useQuery({
     queryKey: ["adminProperties"],
     queryFn: adminService.getAllProperties,
   });
 
+  // Fetch all users for admin
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["adminUsers"],
     queryFn: adminService.getUsers,
@@ -106,7 +106,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - Fixed: Building icon for Properties, not Home */}
         <div className="mb-8">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
@@ -129,7 +129,7 @@ const AdminDashboard = () => {
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                <Home className="h-5 w-5 inline mr-2" />
+                <Building className="h-5 w-5 inline mr-2" /> {/* Fixed icon */}
                 Properties ({properties.length})
               </button>
               <button
@@ -195,7 +195,8 @@ const AdminDashboard = () => {
                       {formatNumber(metrics.properties?.total || 0)}
                     </p>
                   </div>
-                  <Home className="h-8 w-8 text-green-500" />
+                  <Building className="h-8 w-8 text-green-500" />{" "}
+                  {/* Fixed icon */}
                 </div>
                 <div className="mt-4 space-y-2">
                   {metrics.properties?.byStatus &&
@@ -284,7 +285,8 @@ const AdminDashboard = () => {
                               />
                             ) : (
                               <div className="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <Home className="h-6 w-6 text-gray-400" />
+                                <Building className="h-6 w-6 text-gray-400" />{" "}
+                                {/* Fixed icon */}
                               </div>
                             )}
                           </div>
@@ -332,7 +334,8 @@ const AdminDashboard = () => {
                 </div>
               ) : (
                 <div className="p-12 text-center">
-                  <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />{" "}
+                  {/* Fixed icon */}
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
                     No recent properties
                   </h3>
@@ -353,7 +356,8 @@ const AdminDashboard = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <Home className="h-5 w-5 mr-3 text-gray-400" />
+                        <Building className="h-5 w-5 mr-3 text-gray-400" />{" "}
+                        {/* Fixed icon */}
                         <span>Manage Properties</span>
                       </div>
                       <span className="text-gray-400">→</span>
@@ -404,16 +408,16 @@ const AdminDashboard = () => {
           </>
         )}
 
-        {/* Properties Tab */}
+        {/* Properties Tab - Admin sees ALL properties (drafts, published, archived) */}
         {!isLoading && activeTab === "properties" && (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  All Properties
+                  All Properties (Admin View)
                 </h2>
                 <span className="text-sm text-gray-600">
-                  {properties.length} total
+                  {properties.length} total (includes all statuses)
                 </span>
               </div>
             </div>
@@ -453,7 +457,8 @@ const AdminDashboard = () => {
                               />
                             ) : (
                               <div className="h-10 w-10 bg-gray-200 rounded flex items-center justify-center">
-                                <Home className="h-5 w-5 text-gray-400" />
+                                <Building className="h-5 w-5 text-gray-400" />{" "}
+                                {/* Fixed icon */}
                               </div>
                             )}
                           </div>
@@ -540,7 +545,8 @@ const AdminDashboard = () => {
 
             {properties.length === 0 && (
               <div className="p-12 text-center">
-                <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />{" "}
+                {/* Fixed icon */}
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No properties found
                 </h3>
@@ -549,7 +555,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Users Tab */}
+        {/* Users Tab  Admin  be able to see users */}
         {!isLoading && activeTab === "users" && (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-200">
